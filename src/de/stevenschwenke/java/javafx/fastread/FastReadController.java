@@ -9,7 +9,6 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.Button;
@@ -22,13 +21,6 @@ import javafx.scene.web.WebView;
 public class FastReadController implements Initializable {
 
 	// TODO FEedback: ROter Buchstabe muss immer an selber Stelle bleiben.
-
-	private static final int milliesForComma = 80;
-	private static final int milliesForPoint = 100;
-
-	private int minimalPauseBetweenWords = 100;
-
-	private int multiplierForWordLength = 30;
 
 	private double degreeOfwordInsertionOffset = -0.2;
 
@@ -45,6 +37,8 @@ public class FastReadController implements Initializable {
 	private Slider generalSpeedSlider;
 	@FXML
 	private Label statusLabel;
+
+	private ReadingTask task;
 
 	public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
 		generalSpeedSlider.setMin(0.0);
@@ -63,7 +57,7 @@ public class FastReadController implements Initializable {
 				+ "text field.\nThis application is inspired by spritz (spritzinc.com).");
 	}
 
-	private void updateTextField(final String word) {
+	protected void updateTextField(final String word) {
 
 		StringBuilder b = new StringBuilder(word);
 
@@ -88,11 +82,11 @@ public class FastReadController implements Initializable {
 		});
 	}
 
-	private void updateProgressBar(double progress) {
+	protected void updateProgressBar(double progress) {
 		progressBar.setProgress(progress);
 	}
 
-	private void updateStatusLabel(final String text) {
+	protected void updateStatusLabel(final String text) {
 		Platform.runLater(new Runnable() {
 			@Override
 			public void run() {
@@ -104,56 +98,9 @@ public class FastReadController implements Initializable {
 	@FXML
 	private void start() {
 
-		final double startTime = System.currentTimeMillis();
-
 		final String text = inputTextArea.getText();
 
-		final String[] words = text.split("\\s");
-		final String[] paragraphs = text.split("\\n");
-		// TODO Move the filtering out empty paragraphs with paragraph.isEmpty()
-		// from inside the task to here.
-
-		Task<Void> task = new Task<Void>() {
-
-			int wordCount = 1;
-			int paragraphCount = 1;
-
-			@Override
-			protected Void call() throws Exception {
-
-				for (final String paragraph : paragraphs) {
-
-					if (paragraph.isEmpty())
-						continue;
-
-					System.out.println("Beginning paragraph " + paragraphCount);
-					paragraphCount++;
-
-					for (final String word : paragraph.split("\\s")) {
-
-						updateTextField(word);
-						updateProgressBar((double) wordCount / (double) words.length);
-						wordCount++;
-
-						int millisComma = word.contains(",") ? milliesForComma : 0;
-						int milliesPoint = word.contains(".") ? milliesForPoint : 0;
-						int milliesSemicolon = word.contains(";") ? milliesForPoint : 0;
-						int milliesWord = word.length() * multiplierForWordLength;
-						double generalSpeedMultiplier = 1 / generalSpeedSlider.getValue();
-						int millis = (int) ((minimalPauseBetweenWords + milliesWord + millisComma + milliesSemicolon + milliesPoint) * generalSpeedMultiplier);
-						System.out.println("Time for \"" + word + "\": (" + milliesWord + " + " + millisComma + " + " + milliesSemicolon + " + " + milliesPoint
-								+ ") x " + generalSpeedMultiplier + " = " + millis);
-						Thread.sleep(millis);
-					}
-				}
-
-				double runtimeInMinutes = (System.currentTimeMillis() - startTime) / 1000 / 60;
-				updateStatusLabel(words.length + " words in " + runtimeInMinutes + " minutes.");
-				System.out.println(words.length + " words in " + runtimeInMinutes + " minutes.");
-
-				return null;
-			}
-		};
+		task = new ReadingTask(this, text, generalSpeedSlider.valueProperty());
 		new Thread(task).start();
 	}
 
@@ -164,7 +111,7 @@ public class FastReadController implements Initializable {
 
 	@FXML
 	private void backback() {
-		// TODO
+		task.backOneParagraph();
 	}
 
 	@FXML
