@@ -5,6 +5,8 @@ import javafx.concurrent.Task;
 
 public class ReadingTask extends Task<Void> {
 
+	boolean triggerParagraphRewind;
+
 	DoubleProperty generalSpeedProperty;
 
 	private static final int milliesForComma = 80;
@@ -33,7 +35,9 @@ public class ReadingTask extends Task<Void> {
 		final String[] words = text.split("\\s");
 		final String[] paragraphs = text.split("\\n");
 
-		for (final String paragraph : paragraphs) {
+		for (int nextParagraphIndex = 0; nextParagraphIndex < paragraphs.length; nextParagraphIndex++) {
+
+			String paragraph = paragraphs[nextParagraphIndex];
 
 			if (paragraph.isEmpty())
 				continue;
@@ -42,6 +46,12 @@ public class ReadingTask extends Task<Void> {
 			paragraphCount++;
 
 			for (final String word : paragraph.split("\\s")) {
+
+				if (triggerParagraphRewind && nextParagraphIndex >= 0) {
+					triggerParagraphRewind = false;
+					nextParagraphIndex--;
+					break;
+				}
 
 				controller.updateTextField(word);
 				controller.updateProgressBar((double) wordCount / (double) words.length);
@@ -67,6 +77,6 @@ public class ReadingTask extends Task<Void> {
 	}
 
 	public void backOneParagraph() {
-
+		triggerParagraphRewind = true;
 	}
 }
