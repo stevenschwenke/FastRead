@@ -1,5 +1,7 @@
 package de.stevenschwenke.java.javafx.fastread;
 
+import java.util.List;
+
 import javafx.beans.property.DoubleProperty;
 import javafx.concurrent.Task;
 
@@ -32,20 +34,18 @@ public class ReadingTask extends Task<Void> {
 	@Override
 	protected Void call() throws Exception {
 		final double startTime = System.currentTimeMillis();
+		List<Paragraph> paragraphs = TextTokenizer.tokenizeIntoParagraphs(text);
+
 		final String[] words = text.split("\\s");
-		final String[] paragraphs = text.split("\\n");
 
-		for (int nextParagraphIndex = 0; nextParagraphIndex < paragraphs.length; nextParagraphIndex++) {
+		for (int nextParagraphIndex = 0; nextParagraphIndex < paragraphs.size(); nextParagraphIndex++) {
 
-			String paragraph = paragraphs[nextParagraphIndex];
-
-			if (paragraph.isEmpty())
-				continue;
+			Paragraph paragraph = paragraphs.get(nextParagraphIndex);
 
 			System.out.println("Beginning paragraph " + paragraphCount);
 			paragraphCount++;
 
-			for (final String word : paragraph.split("\\s")) {
+			for (final Word word : paragraph.getWords()) {
 
 				if (triggerParagraphRewind && nextParagraphIndex >= 0) {
 					triggerParagraphRewind = false;
@@ -53,13 +53,13 @@ public class ReadingTask extends Task<Void> {
 					break;
 				}
 
-				controller.updateTextField(word);
+				controller.updateTextField(word.toString());
 				controller.updateProgressBar((double) wordCount / (double) words.length);
 				wordCount++;
 
-				int millisComma = word.contains(",") ? milliesForComma : 0;
-				int milliesPoint = word.contains(".") ? milliesForPoint : 0;
-				int milliesSemicolon = word.contains(";") ? milliesForPoint : 0;
+				int millisComma = word.endsWithComma() ? milliesForComma : 0;
+				int milliesPoint = word.endsWithPoint() ? milliesForPoint : 0;
+				int milliesSemicolon = word.endsWithSemicolon() ? milliesForPoint : 0;
 				int milliesWord = word.length() * multiplierForWordLength;
 				double generalSpeedMultiplier = 1 / generalSpeedProperty.getValue();
 				int millis = (int) ((minimalPauseBetweenWords + milliesWord + millisComma + milliesSemicolon + milliesPoint) * generalSpeedMultiplier);
