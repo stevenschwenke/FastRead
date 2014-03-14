@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.paint.*?>
+<?import javafx.scene.web.*?>
+
+<AnchorPane id="AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/2.2" fx:controller="de.stevenschwenke.java.javafx.fastread.FastReadController">
+  <children>
+    <TextArea fx:id="inputTextArea" layoutX="14.0" layoutY="188.0" prefHeight="177.0" prefWidth="572.0" style="" wrapText="true" />
+    <Button fx:id="startButton" layoutX="244.0" layoutY="130.0" mnemonicParsing="false" onAction="#start" text="Read!" />
+    <ProgressBar fx:id="progressBar" layoutX="14.0" layoutY="178.0" prefWidth="572.0" progress="0.0" />
+    <AnchorPane id="AnchorPane" layoutX="124.0" layoutY="28.0" prefHeight="47.0" prefWidth="356.0" style="-fx-border-width: 2px;&#10;-fx-border-color: black;&#10;-fx-border-style: solid;">
+      <children>
+        <WebView fx:id="webview" prefHeight="70.0" prefWidth="481.0" style="" visible="true" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+      </children>
+    </AnchorPane>
+    <Slider fx:id="generalSpeedSlider" layoutX="535.0" layoutY="12.0" orientation="VERTICAL" prefWidth="51.0" />
+    <Button layoutX="159.0" layoutY="130.0" mnemonicParsing="false" onAction="#back" text="back" />
+    <Button layoutX="76.0" layoutY="130.0" mnemonicParsing="false" onAction="#backback" text="backback" />
+    <Button layoutX="14.0" layoutY="130.0" mnemonicParsing="false" onAction="#stop" text="Stop" />
+    <Label fx:id="statusLabel" layoutX="14.0" layoutY="370.0" prefWidth="570.0" text="" />
+  </children>
+</AnchorPane>
