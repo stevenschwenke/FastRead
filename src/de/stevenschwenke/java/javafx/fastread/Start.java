@@ -20,7 +20,7 @@ public class Start extends Application {
 		primaryStage.setWidth(610);
 
 		Parent parent = FXMLLoader.load(this.getClass().getResource("fastread.fxml"));
-
+		primaryStage.setTitle("FastRead");
 		primaryStage.setScene(new Scene(parent));
 	}
 
