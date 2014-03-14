@@ -9,6 +9,8 @@ public class ReadingTask extends Task<Void> {
 
 	boolean triggerParagraphRewind;
 
+	private boolean paused;
+
 	DoubleProperty generalSpeedProperty;
 
 	private static final int milliesForComma = 80;
@@ -47,6 +49,11 @@ public class ReadingTask extends Task<Void> {
 
 			for (final Word word : paragraph.getWords()) {
 
+				while (paused) {
+					System.out.println("Waiting ...");
+					// do nothing
+				}
+
 				if (triggerParagraphRewind && nextParagraphIndex >= 0) {
 					triggerParagraphRewind = false;
 					nextParagraphIndex--;
@@ -78,5 +85,17 @@ public class ReadingTask extends Task<Void> {
 
 	public void backOneParagraph() {
 		triggerParagraphRewind = true;
+	}
+
+	public boolean isReadingPaused() {
+		return paused;
+	}
+
+	public void pauseReading() {
+		paused = true;
+	}
+
+	public void resumeReading() {
+		paused = false;
 	}
 }

@@ -40,6 +40,8 @@ public class FastReadController implements Initializable {
 
 	private ReadingTask task;
 
+	private Thread thread;
+
 	public void initialize(URL fxmlFileLocation, ResourceBundle resources) {
 		generalSpeedSlider.setMin(0.0);
 		generalSpeedSlider.setMax(2.0);
@@ -101,7 +103,8 @@ public class FastReadController implements Initializable {
 		final String text = inputTextArea.getText();
 
 		task = new ReadingTask(this, text, generalSpeedSlider.valueProperty());
-		new Thread(task).start();
+		thread = new Thread(task);
+		thread.start();
 	}
 
 	@FXML
@@ -116,6 +119,9 @@ public class FastReadController implements Initializable {
 
 	@FXML
 	private void stop() {
-		// TODO
+		if (task.isReadingPaused())
+			task.resumeReading();
+		else
+			task.pauseReading();
 	}
 }
