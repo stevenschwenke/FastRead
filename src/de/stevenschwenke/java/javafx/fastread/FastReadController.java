@@ -109,11 +109,6 @@ public class FastReadController implements Initializable {
 
 	@FXML
 	private void back() {
-		// TODO
-	}
-
-	@FXML
-	private void backback() {
 		task.backOneParagraph();
 	}
 
